@@ -41,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: implement initState
     super.initState();
     var a = _checkPermissions();
+    _getData();
     print(a);
   }
 
@@ -64,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var futureBuilder = new FutureBuilder(
+    /*var futureBuilder = new FutureBuilder(
       future: _getData(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         switch (snapshot.connectionState) {
@@ -83,13 +84,13 @@ class _MyHomePageState extends State<MyHomePage> {
               return createListView(context, snapshot);
         }
       },
-    );
+    );*/
 
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(widget.title),
       ),
-      body: futureBuilder,
+      body: createListView(context),
     );
   }
 
@@ -123,8 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-  Widget createListView(BuildContext context, AsyncSnapshot snapshot) {
-    List<FileSystemEntity> values = snapshot.data;
+  Widget createListView(BuildContext context) {
+    List<FileSystemEntity> values = files;
 
     return new ListView.builder(
       itemCount: values.length,
