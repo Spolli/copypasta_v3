@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    var a = _checkPermissions();
+    var a = _checkPermissions(Permission.ReadExternalStorage) && _checkPermissions(Permission.WriteExternalStorage);
     _getData();
     print(a);
   }
@@ -65,27 +65,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    /*var futureBuilder = new FutureBuilder(
-      future: _getData(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-          case ConnectionState.waiting:
-            return new Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new Center(
-                child: new CircularProgressIndicator(),
-              ),
-            );
-          default:
-            if (snapshot.hasError)
-              return new Text('Error: ${snapshot.error}');
-            else
-              return createListView(context, snapshot);
-        }
-      },
-    );*/
-
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(widget.title),
@@ -94,14 +73,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  bool _checkPermissions() {
+  bool _checkPermissions(permission) {
     if (Platform.isAndroid) {
       SimplePermissions
-          .checkPermission(Permission.ReadExternalStorage)
+          .checkPermission(permission)
           .then((checkOkay) {
         if (!checkOkay) {
           SimplePermissions
-              .requestPermission(Permission.ReadExternalStorage)
+              .requestPermission(permission)
               .then((okDone) {
             if (okDone) {
               debugPrint("${okDone}");
@@ -122,6 +101,32 @@ class _MyHomePageState extends State<MyHomePage> {
     return false;
   }
 
+  void _showDialog(file) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(file.toString()),
+          content: new Image.file(new File(file.path)),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Delete"),
+              onPressed: () {
+                Scaffold.of(context).showSnackBar(new SnackBar(
+                    content: new Text('Foto Eliminata!')
+                ));
+                file.deleteSync();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
 
   Widget createListView(BuildContext context) {
@@ -134,7 +139,9 @@ class _MyHomePageState extends State<MyHomePage> {
             child: new ListTile(
               leading: new Text(index.toString()),
               title: new Text(values[index].path),
-              trailing: new IconButton(icon: new Icon(Icons.call_made), onPressed: null),
+              trailing: new IconButton(icon: new Icon(Icons.call_made), onPressed: (){
+                _showDialog(values[index]);
+              }),
             ),
           );
       },
