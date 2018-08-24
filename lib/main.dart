@@ -38,7 +38,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     var a = _checkPermissions(Permission.ReadExternalStorage) && _checkPermissions(Permission.WriteExternalStorage);
     _getData();
@@ -130,11 +129,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   Widget createListView(BuildContext context) {
-    List<FileSystemEntity> values = files;
 
-    return new ListView.builder(
-      itemCount: values.length,
-      itemBuilder: (BuildContext contex, int index){
+    try{
+      List<FileSystemEntity> values = files;
+
+      return new ListView.builder(
+        itemCount: values.length,
+        itemBuilder: (BuildContext contex, int index){
           return new Card(
             child: new ListTile(
               leading: new Text(index.toString()),
@@ -144,7 +145,13 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
             ),
           );
-      },
-    );
+        },
+      );
+    } catch(e){
+      return new Center(
+        child: new CircularProgressIndicator(),
+      );
+    }
+
   }
 }
